@@ -2,5 +2,6 @@
 {
     public class Lift
     {
+        public int Id { get; set; }
     }
 }

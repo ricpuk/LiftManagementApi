@@ -2,5 +2,6 @@
 {
     public class CallLiftDto
     {
+        public int Floor { get; set; }
     }
 }
