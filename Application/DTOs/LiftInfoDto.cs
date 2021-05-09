@@ -3,9 +3,9 @@ using Domain.Enums;
 
 namespace Application.DTOs
 {
-    public class LiftListItemDto
+    public class LiftInfoDto
     {
-        public LiftListItemDto(Lift lift)
+        public LiftInfoDto(Lift lift)
         {
             Id = lift.Id;
             Floor = lift.CurrentFloor;

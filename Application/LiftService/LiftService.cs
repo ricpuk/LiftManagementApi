@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Application.DTOs;
+using Application.Interfaces;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Events;
 using Microsoft.Extensions.Options;
 
 namespace Application.LiftService
@@ -10,47 +16,73 @@ namespace Application.LiftService
     public class LiftService : ILiftService
     {
         private readonly ILiftRepository _liftRepository;
+        private readonly ILiftLogRepository _liftLogRepository;
+        private readonly ILiftScheduler _liftScheduler;
         private readonly LiftServiceOptions _options;
 
-        public LiftService(ILiftRepository liftRepository, IOptions<LiftServiceOptions> options)
+        public LiftService(ILiftRepository liftRepository, ILiftLogRepository liftLogRepository, IOptions<LiftServiceOptions> options, ILiftScheduler liftScheduler)
         {
             _liftRepository = liftRepository;
+            _liftLogRepository = liftLogRepository;
+            _liftScheduler = liftScheduler;
             _options = options.Value;
+
+            for (int i = 1; i <= _options.Lifts; i++)
+            {
+                var lift = new Lift(i, _options.LiftMovementTime, _options.DoorOpenCloseTime, _options.FloorsMin);
+                lift.OnActionCompleted += OnLiftFinishedOperation;
+                lift.OnStateChanged += OnLiftStateChange;
+                _liftRepository.Add(lift);
+            }
+
         }
 
-        public IEnumerable<LiftListItemDto> GetList()
+        public IEnumerable<LiftInfoDto> GetList()
         {
-            return _liftRepository.GetAll().Select(x => new LiftListItemDto(x)).ToList();
+            return _liftRepository.GetAll().Select(x => new LiftInfoDto(x)).ToList();
+        }
+
+        public LiftInfoDto GetById(int id)
+        {
+            var lift = _liftRepository.GetById(id);
+            return new LiftInfoDto(lift);
         }
 
         public bool CallLift(int id, CallLiftDto request)
         {
-            if (request.Floor > _options.Floors || request.Floor < 0)
+            if (request.Floor > _options.FloorsMax || request.Floor < _options.FloorsMin)
             {
-                //Throw;
+                return false;
             }
 
             var lift = _liftRepository.GetById(id);
-            if (lift == null)
-            {
-                return false; // TODO throw
-            }
-
-            lift.TravelTo(request.Floor);
-
+            _liftScheduler.SchedlueOperation(lift, request.Floor);
+            
             return true;
             
         }
 
         public List<LiftLogDto> GetLiftLogs(int id)
         {
-            var lift = _liftRepository.GetById(id);
-            if (lift == null)
-            {
-                return new List<LiftLogDto>();
-            }
+            var logs = _liftLogRepository.GetLogs(id);
+            return logs.Select(x => new LiftLogDto(x)).ToList();
+        }
 
-            return lift.GetLiftLogs().Select(x => new LiftLogDto(x)).ToList();
+        private void OnLiftFinishedOperation(object sender, LiftFinishedOperationEventArgs eventArgs)
+        {
+            var liftId = eventArgs.LiftId;
+            var lift = _liftRepository.GetById(liftId);
+            _liftScheduler.SchedlueOperation(lift);
+            
+        }
+
+        private void OnLiftStateChange(object sender, LiftStateChangedEventArgs eventArgs)
+        {
+            var liftId = eventArgs.LiftId;
+            var date = eventArgs.At;
+            var message = eventArgs.Message;
+            var liftLog = new LiftLog(date, message);
+            _liftLogRepository.Log(liftId, liftLog);
         }
     }
 }

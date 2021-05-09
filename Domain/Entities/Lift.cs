@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Enums;
+using Domain.Events;
 
 namespace Domain.Entities
 {
@@ -14,10 +15,10 @@ namespace Domain.Entities
         private readonly TimeSpan _doorActionTime;
         private readonly ConcurrentBag<LiftLog> _liftLogs = new();
 
-        public Lift(int id, double secondsPerFloor, double doorActionTime)
+        public Lift(int id, double secondsPerFloor, double doorActionTime, int startingFloor)
         {
             Id = id;
-            _currentFloor = 1;
+            _currentFloor = startingFloor;
             _secondsPerFloor = TimeSpan.FromSeconds(secondsPerFloor);
             _doorActionTime = TimeSpan.FromSeconds(doorActionTime);
         }
@@ -49,43 +50,43 @@ namespace Domain.Entities
             }
         }
 
+        public EventHandler<LiftFinishedOperationEventArgs> OnActionCompleted { get; set; }
+        public EventHandler<LiftStateChangedEventArgs> OnStateChanged { get; set; }
+
         public List<LiftLog> GetLiftLogs()
         {
             return _liftLogs.ToList();
         }
 
-        public Task TravelTo(int floor)
+        public async Task TravelTo(int floor)
         {
-            if (floor == CurrentFloor)
-            {
-                return Task.CompletedTask;
-            }
-
+                
             if (CurrentFloor > floor)
             {
                 State = LiftState.GoingDown;
-                Task.Run(() => GoDown(floor));
-            }
+                await GoDown(floor);
+            } 
             else
             {
                 State = LiftState.GoingUp;
-                Task.Run(() => GoUp(floor));
+                await GoUp(floor);
             }
 
-            return Task.CompletedTask;
+            await FinishOperation();
         }
 
-        private async Task GoDown(int floor)
+        private Task GoDown(int floor)
         {
             while (CurrentFloor > floor)
             {
                 Thread.Sleep(_secondsPerFloor);
                 CurrentFloor -= 1;
             }
-            await OpenAndCloseDoors();
+
+            return Task.CompletedTask;
         }
 
-        private async Task GoUp(int floor)
+        private Task GoUp(int floor)
         {
             while (floor > CurrentFloor)
             {
@@ -93,16 +94,20 @@ namespace Domain.Entities
                 CurrentFloor += 1;
             }
 
-            await OpenAndCloseDoors();
+            return Task.CompletedTask;
         }
 
-        private Task OpenAndCloseDoors()
+        private Task FinishOperation()
         {
             State = LiftState.DoorsOpening;
             Thread.Sleep(_doorActionTime);
             State = LiftState.DoorsClosing;
             Thread.Sleep(_doorActionTime);
-            State = LiftState.Idle;
+
+            OnActionCompleted?.Invoke(this, new LiftFinishedOperationEventArgs
+            {
+                LiftId = Id
+            });
 
             return Task.CompletedTask;
         }

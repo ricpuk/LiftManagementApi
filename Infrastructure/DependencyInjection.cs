@@ -1,8 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Repositories;
 using Infrastructure.FloorSelection;
-using Infrastructure.LiftRepository;
-using Microsoft.Extensions.Configuration;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
@@ -12,6 +11,8 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddSingleton<ILiftRepository, InMemoryLiftRepository>();
+            services.AddSingleton<ILiftLogRepository, InMemoryLiftLogRepository>();
+            services.AddSingleton<ILiftOperationRepository, LiftOperationRepository>();
             services.AddTransient<IFloorSelectionStrategy, FifoFloorSelectionStrategy>();
             return services;
         }

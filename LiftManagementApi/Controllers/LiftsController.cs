@@ -17,7 +17,7 @@ namespace LiftManagementApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<LiftListItemDto>>> Index()
+        public async Task<ActionResult<IList<LiftInfoDto>>> Index()
         {
             return Ok(_liftService.GetList());
         }
@@ -31,7 +31,12 @@ namespace LiftManagementApi.Controllers
         [HttpPost("{id}")]
         public ActionResult Call([FromRoute] int id, CallLiftDto callLiftDto)
         {
-            return Ok(_liftService.CallLift(id, callLiftDto));
+            var result = _liftService.CallLift(id, callLiftDto);
+            if (!result)
+            {
+                return BadRequest("Bad request");
+            }
+            return Ok();
         }
     }
 }

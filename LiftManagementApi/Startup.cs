@@ -1,7 +1,6 @@
 using Application;
 using Application.LiftService;
 using Infrastructure;
-using Infrastructure.LiftRepository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +23,6 @@ namespace LiftManagementApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<LiftServiceOptions>(Configuration.GetSection("LiftService"));
-            services.Configure<LiftRepositoryOptions>(Configuration.GetSection("LiftRepository"));
             services.AddApplication();
             services.AddInfrastructure();
             services.AddControllers();
