@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application.LiftService
 {
@@ -10,6 +6,7 @@ namespace Application.LiftService
     {
         public int FloorsMin { get; set; }
         public int FloorsMax { get; set; }
+        [Range(2, int.MaxValue, ErrorMessage = "Please configure atleast 2 lifts.")]
         public int Lifts { get; set; }
         public double LiftMovementTime { get; set; }
         public double DoorOpenCloseTime { get; set; }
