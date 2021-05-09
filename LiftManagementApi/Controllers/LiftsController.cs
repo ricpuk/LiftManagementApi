@@ -23,9 +23,9 @@ namespace LiftManagementApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IList<LiftDto>>> Index([FromRoute] int id)
+        public async Task<ActionResult<List<LiftLogDto>>> Index([FromRoute] int id)
         {
-            return Ok();
+            return Ok(_liftService.GetLiftLogs(id));
         }
 
         [HttpPost("{id}")]

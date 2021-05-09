@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Enums;
@@ -7,16 +10,19 @@ namespace Domain.Entities
 {
     public class Lift
     {
+        private readonly TimeSpan _secondsPerFloor;
+        private readonly TimeSpan _doorActionTime;
+        private readonly ConcurrentBag<LiftLog> _liftLogs = new();
+
         public Lift(int id, double secondsPerFloor, double doorActionTime)
         {
             Id = id;
-            CurrentFloor = 0;
+            _currentFloor = 1;
             _secondsPerFloor = TimeSpan.FromSeconds(secondsPerFloor);
             _doorActionTime = TimeSpan.FromSeconds(doorActionTime);
         }
 
-        private readonly TimeSpan _secondsPerFloor;
-        private readonly TimeSpan _doorActionTime;
+        
 
         public int Id { get; set; }
 
@@ -26,12 +32,27 @@ namespace Domain.Entities
             get => _state;
             set
             {
+                _liftLogs.Add(new LiftLog(DateTime.UtcNow, $"Lift state change: {_state} -> {value}"));
                 _state = value;
-                Console.WriteLine($"Lift: {Id}, State: {_state}");
             }
         }
 
-        public int CurrentFloor { get; private set; }
+        private int _currentFloor;
+        public int CurrentFloor
+        {
+            get => _currentFloor;
+            private set
+            {
+
+                _liftLogs.Add(new LiftLog(DateTime.UtcNow, $"Lift floor change: {_currentFloor} -> {value}"));
+                _currentFloor = value;
+            }
+        }
+
+        public List<LiftLog> GetLiftLogs()
+        {
+            return _liftLogs.ToList();
+        }
 
         public Task TravelTo(int floor)
         {
@@ -70,7 +91,6 @@ namespace Domain.Entities
             {
                 Thread.Sleep(_secondsPerFloor);
                 CurrentFloor += 1;
-                Console.WriteLine($"Lift: {Id}, Floor: {CurrentFloor}");
             }
 
             await OpenAndCloseDoors();
@@ -80,7 +100,7 @@ namespace Domain.Entities
         {
             State = LiftState.DoorsOpening;
             Thread.Sleep(_doorActionTime);
-            State = LiftState.DoorsOpening;
+            State = LiftState.DoorsClosing;
             Thread.Sleep(_doorActionTime);
             State = LiftState.Idle;
 

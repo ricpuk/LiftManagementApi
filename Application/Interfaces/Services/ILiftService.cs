@@ -8,6 +8,6 @@ namespace Application.Interfaces.Services
     {
         IEnumerable<LiftListItemDto> GetList();
         bool CallLift(int id, CallLiftDto request);
-        LiftLogsDto GetLiftLogs(GetLiftLogsDto lift);
+        List<LiftLogDto> GetLiftLogs(int lift);
     }
 }

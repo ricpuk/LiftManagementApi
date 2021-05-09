@@ -3,8 +3,6 @@ using System.Linq;
 using Application.DTOs;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Domain.Entities;
-using Domain.Enums;
 using Microsoft.Extensions.Options;
 
 namespace Application.LiftService
@@ -44,9 +42,15 @@ namespace Application.LiftService
             
         }
 
-        public LiftLogsDto GetLiftLogs(GetLiftLogsDto lift)
+        public List<LiftLogDto> GetLiftLogs(int id)
         {
-            throw new System.NotImplementedException();
+            var lift = _liftRepository.GetById(id);
+            if (lift == null)
+            {
+                return new List<LiftLogDto>();
+            }
+
+            return lift.GetLiftLogs().Select(x => new LiftLogDto(x)).ToList();
         }
     }
 }

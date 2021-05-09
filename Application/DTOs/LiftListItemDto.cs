@@ -9,10 +9,10 @@ namespace Application.DTOs
         {
             Id = lift.Id;
             Floor = lift.CurrentFloor;
-            LiftState = lift.State;
+            LiftState = lift.State.ToString();
         }
         public int Id { get; set; }
         public int Floor { get; set; }
-        public LiftState LiftState { get; set; }
+        public string LiftState { get; set; }
     }
 }
