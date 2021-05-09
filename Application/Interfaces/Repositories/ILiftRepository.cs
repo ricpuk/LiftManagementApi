@@ -1,9 +1,17 @@
-﻿using Domain.Entities;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Domain.Entities;
 
 namespace Application.Interfaces.Repositories
 {
     public interface ILiftRepository
     {
+        /// <summary>
+        /// Gets all lifts.
+        /// </summary>
+        /// <returns>List of lifts.</returns>
+        IEnumerable<Lift> GetAll();
+
         /// <summary>
         /// Gets lift by specified id.
         /// </summary>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.DTOs;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LiftManagementApi.Controllers
@@ -8,10 +9,17 @@ namespace LiftManagementApi.Controllers
     [ApiController]
     public class LiftsController : ApiControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<IList<LiftDto>>> Index()
+        private readonly ILiftService _liftService;
+
+        public LiftsController(ILiftService liftService)
         {
-            return Ok();
+            _liftService = liftService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IList<LiftListItemDto>>> Index()
+        {
+            return Ok(_liftService.GetList());
         }
 
         [HttpGet("{id}")]
@@ -21,9 +29,9 @@ namespace LiftManagementApi.Controllers
         }
 
         [HttpPost("{id}")]
-        public async Task<ActionResult> Call([FromRoute] int id, CallLiftDto callLiftDto)
+        public ActionResult Call([FromRoute] int id, CallLiftDto callLiftDto)
         {
-            return Ok();
+            return Ok(_liftService.CallLift(id, callLiftDto));
         }
     }
 }

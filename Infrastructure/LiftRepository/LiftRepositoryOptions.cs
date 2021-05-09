@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.LiftService
+namespace Infrastructure.LiftRepository
 {
-    public class LiftServiceOptions
+    public class LiftRepositoryOptions
     {
-        public int Floors { get; set; }
+        public int Lifts { get; set; }
         public double LiftMovementTime { get; set; }
         public double DoorOpenCloseTime { get; set; }
     }
