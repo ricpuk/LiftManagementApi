@@ -13,7 +13,6 @@ namespace Domain.Entities
     {
         private readonly TimeSpan _secondsPerFloor;
         private readonly TimeSpan _doorActionTime;
-        private readonly ConcurrentBag<LiftLog> _liftLogs = new();
 
         public Lift(int id, double secondsPerFloor, double doorActionTime, int startingFloor)
         {
@@ -31,9 +30,9 @@ namespace Domain.Entities
         public LiftState State
         {
             get => _state;
-            set
+            set 
             {
-                _liftLogs.Add(new LiftLog(DateTime.UtcNow, $"Lift state change: {_state} -> {value}"));
+                NotifyHandlers($"Lift state change: {_state} -> {value}");
                 _state = value;
             }
         }
@@ -44,19 +43,13 @@ namespace Domain.Entities
             get => _currentFloor;
             private set
             {
-
-                _liftLogs.Add(new LiftLog(DateTime.UtcNow, $"Lift floor change: {_currentFloor} -> {value}"));
+                NotifyHandlers($"Lift floor change: {_currentFloor} -> {value}");
                 _currentFloor = value;
             }
         }
 
         public EventHandler<LiftFinishedOperationEventArgs> OnActionCompleted { get; set; }
         public EventHandler<LiftStateChangedEventArgs> OnStateChanged { get; set; }
-
-        public List<LiftLog> GetLiftLogs()
-        {
-            return _liftLogs.ToList();
-        }
 
         public async Task TravelTo(int floor)
         {
@@ -110,6 +103,16 @@ namespace Domain.Entities
             });
 
             return Task.CompletedTask;
+        }
+
+        private void NotifyHandlers(string message)
+        {
+            OnStateChanged?.Invoke(this, new LiftStateChangedEventArgs
+            {
+                At = DateTime.UtcNow,
+                LiftId = Id,
+                Message = message
+            });
         }
     }
 }

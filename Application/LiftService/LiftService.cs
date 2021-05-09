@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Application.DTOs;
 using Application.Exceptions;
@@ -58,6 +59,7 @@ namespace Application.LiftService
             }
 
             var lift = _liftRepository.GetById(id);
+            RecordNewCall(id, request.Floor);
             _liftScheduler.SchedlueOperation(lift, request.Floor);
             
             return true;
@@ -85,6 +87,12 @@ namespace Application.LiftService
             var message = eventArgs.Message;
             var liftLog = new LiftLog(date, message);
             _liftLogRepository.Log(liftId, liftLog);
+        }
+
+        private void RecordNewCall(int id, int floor)
+        {
+            var log = new LiftLog(DateTime.UtcNow, $"Lift called to floor {floor}");
+            _liftLogRepository.Log(id, log);
         }
     }
 }

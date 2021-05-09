@@ -23,7 +23,8 @@ namespace Application.LiftScheduler
             var liftId = lift.Id;
             _liftOperationRepository.RemoveOperation(liftId, lift.CurrentFloor);
             var requests = _liftOperationRepository.GetOperations(liftId).ToList();
-
+            // Additional optimizations can be made here.
+            // I.e check for any other requests that the lift can handle on its way to defined one.
             if (requests.Any())
             {
                 var floor = _floorSelection.SelectFloor(lift.CurrentFloor, requests);
