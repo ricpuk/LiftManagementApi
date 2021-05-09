@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Application.DTOs;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +16,19 @@ namespace LiftManagementApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IList<LiftInfoDto>>> Index()
+        public ActionResult<IList<LiftInfoDto>> Index()
         {
             return Ok(_liftService.GetList());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<LiftLogDto>>> Index([FromRoute] int id)
+        public ActionResult<LiftInfoDto> Index([FromRoute] int id)
+        {
+            return Ok(_liftService.GetById(id));
+        }
+
+        [HttpGet("{id}/logs")]
+        public ActionResult<List<LiftLogDto>> Logs([FromRoute] int id)
         {
             return Ok(_liftService.GetLiftLogs(id));
         }

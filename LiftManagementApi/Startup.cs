@@ -1,6 +1,7 @@
 using Application;
 using Application.LiftService;
 using Infrastructure;
+using LiftManagementApi.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +26,8 @@ namespace LiftManagementApi
             services.Configure<LiftServiceOptions>(Configuration.GetSection("LiftService"));
             services.AddApplication();
             services.AddInfrastructure();
-            services.AddControllers();
+            services.AddControllers(options =>
+                options.Filters.Add<ApiExceptionFilterAttribute>());
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LiftManagementApi", Version = "v1" });

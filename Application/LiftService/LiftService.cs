@@ -1,13 +1,11 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Application.DTOs;
+using Application.Exceptions;
 using Application.Interfaces;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Events;
 using Microsoft.Extensions.Options;
 
@@ -45,6 +43,10 @@ namespace Application.LiftService
         public LiftInfoDto GetById(int id)
         {
             var lift = _liftRepository.GetById(id);
+            if (lift == null)
+            {
+                throw new NotFoundException($"Lift with id: {id} does not exist.");
+            }
             return new LiftInfoDto(lift);
         }
 
