@@ -1,0 +1,10 @@
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace LiftManagementApi.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public abstract class ApiControllerBase : ControllerBase
+    {
+    }
+}
