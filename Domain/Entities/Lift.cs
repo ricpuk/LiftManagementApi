@@ -28,11 +28,21 @@ namespace Domain.Entities
         private LiftState _state;
         public LiftState State
         {
-            get => _state;
+            get
+            {
+                lock (_lock)
+                {
+                    return _state;
+                }
+            }
             set 
             {
-                NotifyHandlers($"Lift state change: {_state} -> {value}");
-                _state = value;
+                lock (_lock)
+                {
+                    NotifyHandlers($"Lift state change: {_state} -> {value}");
+                    _state = value;
+                }
+                
             }
         }
 
@@ -78,10 +88,7 @@ namespace Domain.Entities
 
         public bool IsIdle()
         {
-            lock (_lock)
-            {
-                return State == LiftState.Idle;
-            }
+            return State == LiftState.Idle;
         }
 
         private Task GoDown(int floor)
