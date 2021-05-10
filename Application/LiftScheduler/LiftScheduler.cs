@@ -39,10 +39,11 @@ namespace Application.LiftScheduler
         public void ScheduleOperation(Lift lift, int floor)
         {
             var liftId = lift.Id;
+            var liftOperations = _liftOperationRepository.GetOperations(liftId);
             _liftOperationRepository.ScheduleOperation(liftId, floor);
 
-            if (lift.State == LiftState.Idle)
-            {
+            if (lift.IsIdle() && !liftOperations.Any())
+            { 
                 Schedule(lift, floor);
             }
         }

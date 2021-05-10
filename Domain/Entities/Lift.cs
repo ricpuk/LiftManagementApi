@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain.Enums;
@@ -13,6 +10,8 @@ namespace Domain.Entities
     {
         private readonly TimeSpan _secondsPerFloor;
         private readonly TimeSpan _doorActionTime;
+
+        private readonly object _lock = new();
 
         public Lift(int id, double secondsPerFloor, double doorActionTime, int startingFloor)
         {
@@ -40,11 +39,20 @@ namespace Domain.Entities
         private int _currentFloor;
         public int CurrentFloor
         {
-            get => _currentFloor;
+            get
+            {
+                lock (_lock)
+                {
+                    return _currentFloor;
+                }
+            }
             private set
             {
-                NotifyHandlers($"Lift floor change: {_currentFloor} -> {value}");
-                _currentFloor = value;
+                lock (_lock)
+                {
+                    NotifyHandlers($"Lift floor change: {_currentFloor} -> {value}");
+                    _currentFloor = value;
+                }
             }
         }
 
@@ -66,6 +74,14 @@ namespace Domain.Entities
             }
 
             await FinishOperation();
+        }
+
+        public bool IsIdle()
+        {
+            lock (_lock)
+            {
+                return State == LiftState.Idle;
+            }
         }
 
         private Task GoDown(int floor)

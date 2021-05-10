@@ -5,7 +5,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Repositories
 {
-    class InMemoryLiftRepository : ILiftRepository
+    public class InMemoryLiftRepository : ILiftRepository
     {
         private readonly ConcurrentDictionary<int, Lift> _lifts = new();
         public IEnumerable<Lift> GetAll()

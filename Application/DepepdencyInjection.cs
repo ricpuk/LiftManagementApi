@@ -1,7 +1,5 @@
 ﻿using Application.Interfaces;
 using Application.Interfaces.Services;
-using Application.LiftService;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 
