@@ -9,6 +9,6 @@ namespace Application.Interfaces.Services
         IEnumerable<LiftInfoDto> GetList();
         bool CallLift(int id, CallLiftDto request);
         LiftInfoDto GetById(int id);
-        List<LiftLogDto> GetLiftLogs(int lift);
+        IEnumerable<LiftLogDto> GetLiftLogs(int lift);
     }
 }

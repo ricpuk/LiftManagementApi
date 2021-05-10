@@ -66,7 +66,7 @@ namespace Application.LiftService
             
         }
 
-        public List<LiftLogDto> GetLiftLogs(int id)
+        public IEnumerable<LiftLogDto> GetLiftLogs(int id)
         {
             var logs = _liftLogRepository.GetLogs(id);
             return logs.Select(x => new LiftLogDto(x)).ToList();

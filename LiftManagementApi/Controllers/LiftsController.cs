@@ -28,7 +28,7 @@ namespace LiftManagementApi.Controllers
         }
 
         [HttpGet("{id}/logs")]
-        public ActionResult<List<LiftLogDto>> Logs([FromRoute] int id)
+        public ActionResult<IList<LiftLogDto>> Logs([FromRoute] int id)
         {
             return Ok(_liftService.GetLiftLogs(id));
         }
