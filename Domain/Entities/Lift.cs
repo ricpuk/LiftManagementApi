@@ -24,7 +24,7 @@ namespace Domain.Entities
 
         
 
-        public int Id { get; set; }
+        public int Id { get; }
 
         private LiftState _state;
         public LiftState State
