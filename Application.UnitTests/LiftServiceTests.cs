@@ -35,13 +35,19 @@ namespace Application.UnitTests
             });
 
             var liftRepositoryMock = new Mock<ILiftRepository>(MockBehavior.Strict);
-            liftRepositoryMock.Setup(x => x.Add(It.IsAny<Lift>())).Returns(true);
+            liftRepositoryMock.Setup(x => x.Add(It.IsAny<Lift>())).Returns((Lift lift) =>
+            {
+                _lifts.Add(lift.Id, lift);
+                return true;
+            });
+
             liftRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).Returns<Lift>(null);
+            
             for (int i = 1; i <= options.Value.Lifts; i++)
             {
-                var lift = new Lift(i, _liftActionTime, _liftActionTime, _floorsMin);
-                _lifts.Add(i, lift);
-                liftRepositoryMock.Setup(x => x.GetById(lift.Id)).Returns(lift);
+                liftRepositoryMock
+                    .Setup(x => x.GetById(It.IsAny<int>()))
+                    .Returns((int id) => _lifts.TryGetValue(id, out var lift) ? lift : null);
             }
 
             liftRepositoryMock.Setup(x => x.GetAll()).Returns(_lifts.Values);
