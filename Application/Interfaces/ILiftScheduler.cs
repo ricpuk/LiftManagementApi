@@ -11,13 +11,13 @@ namespace Application.Interfaces
         /// Schedule next operation after completion.
         /// </summary>
         /// <param name="lift">Lift to schedule operation for.</param>
-        void SchedlueOperation(Lift lift);
+        void ScheduleOperation(Lift lift);
 
         /// <summary>
         /// Schedule a new operation.
         /// </summary>
         /// <param name="lift">Lift to schedule operation for.</param>
         /// <param name="floor">Operation floor.</param>
-        void SchedlueOperation(Lift lift, int floor);
+        void ScheduleOperation(Lift lift, int floor);
     }
 }

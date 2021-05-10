@@ -18,7 +18,7 @@ namespace Application.LiftScheduler
             _floorSelection = floorSelection;
         }
 
-        public void SchedlueOperation(Lift lift)
+        public void ScheduleOperation(Lift lift)
         {
             var liftId = lift.Id;
             _liftOperationRepository.RemoveOperation(liftId, lift.CurrentFloor);
@@ -36,7 +36,7 @@ namespace Application.LiftScheduler
             }
         }
 
-        public void SchedlueOperation(Lift lift, int floor)
+        public void ScheduleOperation(Lift lift, int floor)
         {
             var liftId = lift.Id;
             _liftOperationRepository.ScheduleOperation(liftId, floor);

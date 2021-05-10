@@ -49,7 +49,7 @@ namespace Application.UnitTests
             var liftLogRepositoryMock = new Mock<ILiftLogRepository>();
 
             var liftSchedulerMock = new Mock<ILiftScheduler>(MockBehavior.Strict);
-            liftSchedulerMock.Setup(x => x.SchedlueOperation(It.IsAny<Lift>(), It.IsAny<int>()));
+            liftSchedulerMock.Setup(x => x.ScheduleOperation(It.IsAny<Lift>(), It.IsAny<int>()));
 
             _liftService = new LiftService.LiftService(
                 liftRepositoryMock.Object, 

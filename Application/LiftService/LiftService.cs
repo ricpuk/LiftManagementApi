@@ -60,7 +60,7 @@ namespace Application.LiftService
 
             var lift = _liftRepository.GetById(id);
             RecordNewCall(id, request.Floor);
-            _liftScheduler.SchedlueOperation(lift, request.Floor);
+            _liftScheduler.ScheduleOperation(lift, request.Floor);
             
             return true;
             
@@ -76,7 +76,7 @@ namespace Application.LiftService
         {
             var liftId = eventArgs.LiftId;
             var lift = _liftRepository.GetById(liftId);
-            _liftScheduler.SchedlueOperation(lift);
+            _liftScheduler.ScheduleOperation(lift);
             
         }
 
